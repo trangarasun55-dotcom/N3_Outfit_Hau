@@ -1,0 +1,10 @@
+{
+  "gender": "Nam",
+  "activity": "Xưởng/Công trình",
+  "temperature": 12,
+  "styles": [],
+  "colors": [],
+  "formality": 35,
+  "top_n": 3,
+  "temperature_source": "live"
+}

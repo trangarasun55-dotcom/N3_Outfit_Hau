@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "test_rows": 900,
+  "test_product_groups": 225,
+  "target": "Điểm phù hợp (0–10)",
+  "target_semantics": "rule_generated_suitability_score; not observed user preference",
+  "metrics": {
+    "Mốc đoán trung bình": {
+      "mae_points": 2.2890335947712415,
+      "rmse_points": 2.653471022477545,
+      "r2": -5.8158821985010434e-05
+    },
+    "KNN": {
+      "mae_points": 0.6764074074074073,
+      "rmse_points": 1.0412593277634161,
+      "r2": 0.8460022524462654
+    },
+    "RF": {
+      "mae_points": 0.28627777777777774,
+      "rmse_points": 0.45357506728949165,
+      "r2": 0.9707790113077686
+    },
+    "Lai": {
+      "mae_points": 0.28751062962962964,
+      "rmse_points": 0.4434702057815105,
+      "r2": 0.9720664936653076
+    }
+  },
+  "selected_model": "Lai",
+  "hybrid_weight": {
+    "rf": 0.95,
+    "knn": 0.050000000000000044
+  }
+}

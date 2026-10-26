@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}OutfitAI · Phong cách & Tiêu chí{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="top-breadcrumb">Gợi ý trang phục › <span>Tiêu chí phối đồ</span></div>
+
+    <div class="stepper-bar">
+        <span class="step-item done">✓ Hoạt động</span>
+        <span class="step-line active"></span>
+        <span class="step-item active">2 Phong cách</span>
+        <span class="step-line"></span>
+        <span class="step-item">3 Kết quả</span>
+    </div>
+
+    {% if api_error %}<div class="notice error-notice" role="status">{{ api_error }}</div>{% endif %}
+    <form action="{{ url_for('style_select') }}" method="POST" id="styleForm">
+        <input type="hidden" name="temperature" id="submittedTemperature" value="{{ temperature if temperature is not none else '' }}">
+        <input type="hidden" name="temperature_source" value="{{ temperature_source }}">
+        <input type="hidden" id="previewTemperature" value="{{ temperature if temperature is not none else 25 }}">
+        <input type="hidden" id="previewActivityValue" value="{{ activity }}">
+        <div class="form-layout-grid">
+            <!-- CỘT TRÁI -->
+            <div class="form-left">
+                <h1 class="main-title">Phong cách & Gu thẩm mỹ</h1>
+                <p class="sub-title">Điều chỉnh các tiêu chí bên dưới để thuật toán DSS đánh giá trọng số.</p>
+
+                <!-- 1. Phong cách -->
+                <div class="card form-card">
+                    <h4>Phong cách yêu thích</h4>
+                    <p class="card-subtext">Chọn một hoặc nhiều phong cách bạn muốn hướng tới</p>
+                    <div class="chip-group" role="group" aria-label="Chọn phong cách yêu thích">
+                        {% for style_name in styles %}
+                        <label class="chip-item {% if style_name in selected_styles %}selected{% endif %}">
+                            <input class="visually-hidden-choice" type="checkbox" name="styles" value="{{ style_name }}" {% if style_name in selected_styles %}checked{% endif %}>
+                            <span>{{ style_name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 2. Màu sắc -->
+                <div class="card form-card">
+                    <h4>Bảng Màu Ưu Tiên</h4>
+                    <p class="card-subtext">Chọn Một Hoặc Nhiều Tông Màu Bạn Ưu Tiên Trong Tủ Đồ</p>
+                    <div class="color-picker-group" role="group" aria-label="Chọn một hoặc nhiều màu có trong tủ đồ">
+                        {% set color_tokens = {
+                            'Bạc':'linear-gradient(135deg,#f8fafc,#94a3b8)', 'Be':'#d6bd91', 'Be sữa':'#eadfc9',
+                            'Cam':'#f97316', 'Đen':'#111827', 'Đen trắng':'linear-gradient(135deg,#111827 0 50%,#fff 50% 100%)',
+                            'Đỏ':'#dc2626', 'Đỏ đen':'linear-gradient(135deg,#dc2626 0 50%,#111827 50% 100%)', 'Đỏ đô':'#7f1d1d',
+                            'Hồng':'#ec4899', 'Hồng pastel':'#f9a8d4', 'Kem':'#fff1cc', 'Khaki':'#b7a369',
+                            'Nâu':'#854d0e', 'Nâu caramel':'#c0783d', 'Nâu đậm':'#4b2e24',
+                            'Nhiều màu':'linear-gradient(135deg,#ef4444,#f59e0b,#22c55e,#3b82f6,#8b5cf6)',
+                            'Tím':'#7e22ce', 'Tím lavender':'#c4b5fd', 'Trắng':'#ffffff', 'Trong suốt':'#ffffff',
+                            'Vàng':'#facc15', 'Vàng mustard':'#ca8a04', 'Xám':'#6b7280', 'Xám tro':'#a1a1aa',
+                            'Xanh baby':'#bfdbfe', 'Xanh denim đậm':'#1e3a8a', 'Xanh denim nhạt':'#60a5fa',
+                            'Xanh dương':'#2563eb', 'Xanh lá':'#16a34a', 'Xanh mint':'#6ee7b7', 'Xanh navy':'#1e3a5f',
+                            'Xanh olive':'#556b2f', 'Xanh rêu':'#3f6212', 'Xanh trắng':'linear-gradient(135deg,#fff 0 50%,#60a5fa 50% 100%)'
+                        } %}
+                        {% for color in colors %}
+                        <label class="color-choice {% if color in selected_colors %}selected{% endif %} {% if color == 'Trong suốt' %}is-transparent{% endif %}" title="{{ color }}">
+                            <input class="visually-hidden-choice" type="checkbox" name="colors" value="{{ color }}" aria-label="Màu {{ color }}" {% if color in selected_colors %}checked{% endif %}>
+                            <span class="color-swatch" style="--color-swatch:{{ color_tokens.get(color, '#7c3aed') }}" aria-hidden="true"></span>
+                            <span class="color-choice-name">{{ color }}</span>
+                            <span class="color-checkmark" aria-hidden="true">✓</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 3. Mức độ thoải mái -->
+                <div class="card form-card">
+                    <h4>Mức độ thoải mái / Trang trọng</h4>
+                    <p class="card-subtext">Điều chỉnh trọng số ưu tiên sự tiện dụng hay tính lịch sự</p>
+                    <div class="range-container">
+                        <input type="range" name="formality" min="0" max="100" value="{{ formality }}" class="purple-slider" id="comfortRange">
+                        <div class="range-labels">
+                            <div><b>Thoải mái</b><br><small>Dễ vận động</small></div>
+                            <div style="text-align: center;"><b id="rangePercent">{{ formality }}%</b><br><small>CÂN BẰNG</small></div>
+                            <div style="text-align: right;"><b>Trang trọng</b><br><small>Lịch sự, chỉn chu</small></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Yêu cầu khác -->
+                <div class="card form-card">
+                    <h4>Lưu ý đặc biệt</h4>
+                    <textarea name="notes" maxlength="300" class="custom-textarea" placeholder="Ví dụ: Không mặc áo vướng víu khi cắt mô hình, ưu tiên quần có túi rộng...">{{ notes }}</textarea>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI (TỔNG HỢP) -->
+            <div class="form-right">
+                <div class="card preview-card live-preview-card" aria-live="polite">
+                    <div class="live-preview-heading">
+                        <div><span class="section-kicker">TIÊU CHÍ GỢI Ý</span><h2>{% if criteria_saved %}Sẵn sàng tạo gợi ý{% else %}Thiết lập tiêu chí trang phục{% endif %}</h2></div>
+                        <span id="previewStatus" class="preview-status">{% if criteria_saved %}Đã lưu tiêu chí{% else %}Chưa phân tích{% endif %}</span>
+                    </div>
+                    <div class="summary-row"><span>Hoạt động</span><b id="previewActivity">{{ activity }}</b></div>
+                    <div class="summary-row"><span>Thời tiết</span><span class="purple-pill" id="previewWeather">{% if temperature is not none %}{{ temperature }}°C · {{ weather_city }}{% else %}Chưa có dữ liệu{% endif %}</span></div>
+                    <div class="summary-row"><span>Thoải mái ↔ Trang trọng</span><b id="previewFormality">{{ formality }}% · {% if formality|int < 34 %}Ưu tiên thoải mái{% elif formality|int > 66 %}Ưu tiên trang trọng{% else %}Cân bằng{% endif %}</b></div>
+                    <div class="summary-row"><span>Phong cách</span><b id="previewStyles">{% if selected_styles %}{{ selected_styles|join(', ') }}{% else %}AI tự cân bằng{% endif %}</b></div>
+                    <div class="summary-row"><span>Màu Sắc Ưu Tiên</span><b id="previewColors">{% if selected_colors %}{{ selected_colors|join(', ') }}{% else %}Tất cả màu phù hợp{% endif %}</b></div>
+                    <div class="summary-row"><span>Lưu ý đặc biệt</span><b id="previewNotes">{{ notes or 'Không có lưu ý bổ sung' }}</b></div>
+                    <div class="ai-info-box" id="previewMessage">Chọn phong cách, màu sắc và mức độ ưu tiên. Bảng tiêu chí bên phải cập nhật ngay; khi bấm nút bên dưới, hệ thống sẽ phân tích và xếp hạng tối đa 3 bộ trang phục.</div>
+                    <button type="submit" name="action" value="generate" class="btn-submit-ai">Tiếp tục · Bắt đầu phân tích AI</button>
+                    <a href="{{ url_for('index') }}" class="btn-back-link">‹ Quay lại chọn hoạt động</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

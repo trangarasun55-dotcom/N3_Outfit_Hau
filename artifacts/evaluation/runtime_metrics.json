@@ -1,0 +1,21 @@
+{
+  "status": "MEASURED",
+  "environment": {
+    "python": "3.14.7",
+    "scikit_learn": "1.9.1"
+  },
+  "model_batch": {
+    "rows": 900,
+    "repetitions": 3,
+    "median_ms": 161.29790002014488,
+    "mean_ms": 155.4965000056351,
+    "unit": "milliseconds per batch"
+  },
+  "recommendation_scenarios": {
+    "count": 20,
+    "median_ms": 3955.3893500124104,
+    "mean_ms": 5463.789045007434,
+    "unit": "milliseconds per in-process recommendation call"
+  },
+  "limitations": "No HTTP, cold-start, concurrent load, or production hardware benchmark was run."
+}

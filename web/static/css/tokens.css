@@ -1,0 +1,83 @@
+@font-face {
+    font-family: "Be Vietnam Pro";
+    src: url("../fonts/BeVietnamPro-Regular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Be Vietnam Pro";
+    src: url("../fonts/BeVietnamPro-Medium.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Be Vietnam Pro";
+    src: url("../fonts/BeVietnamPro-SemiBold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Be Vietnam Pro";
+    src: url("../fonts/BeVietnamPro-Bold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Cormorant Garamond";
+    src: url("../fonts/CormorantGaramond-Variable.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Cormorant Garamond";
+    src: url("../fonts/CormorantGaramond-Italic-Variable.ttf") format("truetype");
+    font-style: italic;
+    font-weight: 300 700;
+    font-display: swap;
+}
+
+:root {
+    --color-page: #f6f8ff;
+    --color-surface: #ffffff;
+    --color-ink: #20243a;
+    --color-muted: #5d6680;
+    --color-border: #b9beb6;
+    --color-accent: #5756d9;
+    --color-accent-soft: #eeedff;
+    --color-danger: #b4233b;
+    --color-danger-soft: #f4e5e2;
+    --color-success: #16794b;
+    --color-success-soft: #e4eee7;
+    --color-white: #ffffff;
+    --font-sans: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif;
+    --font-serif: "Cormorant Garamond", Georgia, serif;
+    --font-size-body: 1.0625rem;
+    --font-size-small: 0.875rem;
+    --font-size-label: 0.8125rem;
+    --font-size-title: clamp(2rem, 4vw, 3.5rem);
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.875rem;
+    --radius-lg: 1.125rem;
+    --radius-pill: 999px;
+    --shadow-card: 0 10px 26px rgba(24, 32, 29, 0.07);
+    --sidebar-width: 220px;
+    --topbar-height: 56px;
+}

@@ -1,0 +1,21 @@
+{% extends 'auth_base.html' %}
+{% block title %}Tủ Đồ DSS · Đăng nhập{% endblock %}
+{% block content %}
+<section class="auth-card" aria-labelledby="authTitle">
+    <p class="section-kicker">ĐĂNG NHẬP</p>
+    <h1 class="auth-title" id="authTitle">Chào mừng bạn trở lại</h1>
+    <p class="sub-title">Đăng nhập để nhận gợi ý và lưu lịch sử trang phục.</p>
+    {% if error %}<p class="notice error-notice" role="alert">{{ error }}</p>{% endif %}
+    <form class="auth-form" method="post" action="{{ url_for('login') }}">
+        {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
+        <label for="loginEmail">Email
+            <input id="loginEmail" name="email" type="email" autocomplete="email" maxlength="254" required autofocus>
+        </label>
+        <label for="loginPassword">Mật khẩu
+            <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="btn-submit-ai auth-submit" type="submit">Đăng nhập</button>
+    </form>
+    <div class="auth-links"><span>Chưa có tài khoản?</span><a href="{{ url_for('register') }}">Đăng ký</a></div>
+</section>
+{% endblock %}

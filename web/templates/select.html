@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Tủ Đồ DSS · Trang chủ{% endblock %}
+
+{% block content %}
+<div class="page-container home-page">
+    {% if api_error %}<div class="notice error-notice" role="status">{{ api_error }}</div>{% endif %}
+    {% if request.args.get('schedule_error') %}<div class="notice error-notice" role="alert">{% if request.args.get('schedule_error') == 'missing' %}Vui lòng chọn tệp ảnh hoặc nhập ít nhất một buổi học. Ảnh phải nhỏ hơn 5 MB.{% elif request.args.get('schedule_error') == 'format' %}Tệp không phải ảnh PNG, JPG hoặc WEBP hợp lệ.{% elif request.args.get('schedule_error') == 'parser' %}Ảnh hợp lệ nhưng chưa đọc được tự động. Bạn có thể nhập lịch thủ công; ảnh không được lưu lại.{% elif request.args.get('schedule_error') == 'gender' %}Vui lòng chọn giới tính trong hồ sơ để tiếp tục.{% else %}Hãy nhập đầy đủ ngày, giờ bắt đầu và tên môn học.{% endif %}</div>{% endif %}
+    <section class="home-intro">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> AI GỢI Ý HÔM NAY</div>
+        <h1>Hôm nay bạn<br><em>muốn mặc gì?</em></h1>
+        <p>Cho chúng tôi biết lịch học và điều kiện hôm nay để hệ thống tìm trang phục phù hợp nhất cho bạn.</p>
+    </section>
+
+    <section class="home-section" aria-labelledby="conditionsTitle">
+        <div class="section-heading"><span class="section-number">1</span><h2 id="conditionsTitle">Điều kiện hôm nay</h2></div>
+        <div class="conditions-grid">
+            <article class="home-card weather-home-card">
+                <div class="home-card-heading"><span class="section-kicker">THỜI TIẾT HÔM NAY</span><span class="card-heading-icon" aria-hidden="true">☼</span></div>
+                <div class="weather-reading" id="weatherReading">{% if weather is not none %}{{ weather }}°<span> C</span>{% else %}<span class="weather-empty">Chưa có dữ liệu</span>{% endif %}</div>
+                <div class="weather-caption" id="weatherStatus">{% if weather is not none %}{{ weather_city }} · thời tiết hiện tại{% else %}Thời tiết chưa được tải{% endif %}</div>
+                <div class="weather-stats">
+                    <div><span>Cảm giác như</span><b id="feelsLike">—</b></div>
+                    <div><span>Độ ẩm</span><b id="humidity">—</b></div>
+                    <div><span>Gió</span><b id="windSpeed">—</b></div>
+                </div>
+                <div class="rain-alert" id="rainAlert" hidden></div>
+                <div class="weather-controls">
+                    <label class="city-control"><span class="sr-only">Thành phố</span><input id="weatherCity" value="{{ weather_city }}" placeholder="Thành phố" aria-label="Thành phố"></label>
+                    <button class="btn-outline-pill" type="button" id="refreshWeather">Cập nhật</button>
+                    <label class="manual-weather">Nhập tay <input type="number" id="manualTemperature" step="0.1" min="-10" max="50" value="{{ weather if weather is not none else '' }}" placeholder="°C" aria-label="Nhiệt độ thủ công"></label><button class="btn-outline-pill" type="button" id="useLiveTemperature">Dùng nhiệt độ thực</button>
+                </div>
+            </article>
+
+            <article class="home-card schedule-home-card">
+                <div class="home-card-heading"><span class="section-kicker">LỊCH HỌC HÔM NAY</span><span class="purple-pill" id="scheduleCount">{% if schedule and schedule.kind == 'entries' %}{{ schedule.entries|length }} tiết{% else %}0 tiết{% endif %}</span></div>
+                {% if schedule and schedule.kind == 'entries' %}
+                    <div class="schedule-today-list">
+                    {% for entry in schedule.entries %}
+                        <div class="schedule-today-row" data-schedule-day="{{ entry.day }}"><span class="schedule-time">{{ entry.time }}</span><span class="schedule-subject"><b>{{ entry.subject }}</b><small>{{ entry.room or entry.day }}</small></span><span class="schedule-kind kind-{{ {'LT': 'lecture', 'ĐA': 'studio', 'NT': 'outdoor', 'TT': 'presentation'}.get(entry.kind, 'lecture') }}">{{ entry.kind or 'LT' }}</span></div>
+                    {% endfor %}
+                    </div>
+                    <div class="schedule-empty" id="scheduleEmptyToday" hidden><b>Hôm nay bạn chưa có lịch học</b></div>
+                {% elif schedule and schedule.kind == 'image' %}
+                    <div class="schedule-empty"><span class="empty-calendar" aria-hidden="true">▦</span><b>Ảnh lịch học đã được tải lên</b><span>Lịch chưa được trích xuất thành các tiết học.</span></div>
+                {% else %}
+                    <div class="schedule-empty"><span class="empty-calendar" aria-hidden="true">▦</span><b>Hôm nay bạn chưa có lịch học</b><span>Thêm lịch để cá nhân hóa gợi ý.</span></div>
+                {% endif %}
+                <div class="schedule-actions"><a href="#scheduleEditor" class="text-link">{% if schedule %}Chỉnh sửa lịch học{% else %}Tạo lịch học{% endif %}</a><a href="#scheduleEditor" class="text-link">+ Thêm</a></div>
+            </article>
+        </div>
+        <details class="schedule-editor" id="scheduleEditor">
+            <summary>Thêm lịch học hoặc tải ảnh lịch</summary>
+            <div class="schedule-choice-grid">
+                <section class="schedule-option">
+                    <h3>Tải ảnh lịch học</h3><p class="card-subtext">Chọn ảnh PNG, JPG hoặc WEBP (tối đa 5 MB).</p>
+                    <form action="{{ url_for('save_schedule') }}" method="post" enctype="multipart/form-data"><input type="hidden" name="schedule_mode" value="upload"><label class="upload-control">Chọn ảnh lịch<input type="file" name="schedule_image" accept="image/png,image/jpeg,image/webp" required></label><button class="btn-submit-ai schedule-submit" type="submit">Đọc ảnh lịch</button></form>
+                </section>
+                <section class="schedule-option">
+                    <h3>Tạo lịch học</h3><p class="card-subtext">Nhập các buổi học trong tuần.</p>
+                    <form action="{{ url_for('save_schedule') }}" method="post" id="scheduleForm"><input type="hidden" name="schedule_mode" value="create"><div id="scheduleRows">
+                    {% if schedule and schedule.kind == 'entries' %}{% for entry in schedule.entries %}
+                    <div class="schedule-row"><select name="day" aria-label="Ngày học">{% for day_name in ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'] %}<option value="{{ day_name }}" {% if entry.day == day_name %}selected{% endif %}>{{ day_name }}</option>{% endfor %}</select><input name="class_time" type="time" aria-label="Giờ bắt đầu" value="{{ entry.time }}" required><input name="subject" maxlength="100" placeholder="Môn học" value="{{ entry.subject }}" required><input name="room" maxlength="50" placeholder="Phòng / địa điểm" value="{{ entry.room }}"><select name="kind" aria-label="Loại tiết">{% for kind_code, kind_label in [('LT', 'LT · Lý thuyết'), ('ĐA', 'ĐA · Đồ án/xưởng'), ('NT', 'NT · Ngoài trời'), ('TT', 'TT · Thuyết trình')] %}<option value="{{ kind_code }}" {% if entry.kind == kind_code %}selected{% endif %}>{{ kind_label }}</option>{% endfor %}</select><button type="button" class="remove-row-button" aria-label="Xóa buổi học">×</button></div>
+                    {% endfor %}{% else %}
+                    <div class="schedule-row"><select name="day" aria-label="Ngày học"><option value="Thứ Hai">Thứ Hai</option><option>Thứ Ba</option><option>Thứ Tư</option><option>Thứ Năm</option><option>Thứ Sáu</option><option>Thứ Bảy</option><option>Chủ Nhật</option></select><input name="class_time" type="time" aria-label="Giờ bắt đầu" required><input name="subject" maxlength="100" placeholder="Môn học" required><input name="room" maxlength="50" placeholder="Phòng / địa điểm"><select name="kind" aria-label="Loại tiết"><option value="LT">LT · Lý thuyết</option><option value="ĐA">ĐA · Đồ án/xưởng</option><option value="NT">NT · Ngoài trời</option><option value="TT">TT · Thuyết trình</option></select><button type="button" class="remove-row-button" aria-label="Xóa buổi học">×</button></div>
+                    {% endif %}</div><button type="button" class="add-row-button" id="addScheduleRow">＋ Thêm buổi học</button><button class="btn-submit-ai schedule-submit" type="submit">Lưu lịch học</button></form>
+                </section>
+            </div>
+        </details>
+    </section>
+
+    <section class="home-section activity-section" aria-labelledby="activityTitle">
+        <div class="activity-heading-row"><div><div class="section-heading"><span class="section-number">2</span><h2 id="activityTitle">Hôm nay bạn có hoạt động gì?</h2></div><p class="section-helper">Chọn hoạt động chính trong ngày — AI sẽ điều chỉnh gợi ý phù hợp.</p></div></div>
+        <form action="{{ url_for('choose_activity') }}" method="post" id="activityForm">
+            <div class="gender-row"><span class="gender-label">Giới tính</span><div class="gender-choice" role="radiogroup" aria-label="Giới tính">{% for option in genders %}<label><input type="radio" name="gender" value="{{ option }}" {% if shell_profile.gender == option %}checked{% endif %}>{{ option }}</label>{% endfor %}</div><a href="{{ url_for('profile') }}" class="gender-profile-link">Sửa trong hồ sơ</a></div>
+            <div class="activity-grid">
+                {% set descriptions = ['Buổi học trên lớp, studio, seminar', 'Làm mô hình, workshop xưởng, tiếp xúc vật liệu, công trình', 'Ký họa, khảo sát ngoài trời, hiện trường', 'Bảo vệ đồ án, báo cáo, sự kiện'] %}
+                {% set chips = ['Lý thuyết', 'Thực hành', 'Ngoài trời', 'Báo cáo'] %}
+                {% for item in activities %}
+                <label class="activity-card {% if activity == item.name %}selected{% endif %}">
+                    <input type="radio" name="activity" value="{{ item.name }}" {% if activity == item.name %}checked{% endif %} required>
+                    <span class="activity-check" aria-hidden="true">✓</span>
+                    <span class="activity-icon" aria-hidden="true">
+                        {% if loop.index0 == 0 %}<svg viewBox="0 0 24 24"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H20v17H7.5A3.5 3.5 0 0 0 4 22z"/><path d="M4 5.5v13A3.5 3.5 0 0 1 7.5 15H20M8 6h8"/></svg>
+                        {% elif loop.index0 == 1 %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.5"/><path d="m14 10 5-5M16 4h3v3M12 3v2M21 12h-2"/></svg>
+                        {% elif loop.index0 == 2 %}<svg viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                        {% else %}<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 22h8M12 17v5M8 9l3 3 5-5"/></svg>{% endif %}
+                    </span>
+                    <span class="activity-card-title">{{ item.name }}</span>
+                    <span class="activity-description">{{ descriptions[loop.index0] }}</span>
+                    <span class="activity-chip">{{ chips[loop.index0] }}</span>
+                </label>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="temperature" id="activityTemperature" value="{{ weather if weather is not none else '' }}">
+            <input type="hidden" name="temperature_source" id="temperatureSource" value="live">
+            <div class="continue-row"><span id="actionHint">{% if not activity and not shell_profile.gender %}Vui lòng chọn hoạt động và giới tính{% elif not activity %}Vui lòng chọn một hoạt động để tiếp tục{% elif not shell_profile.gender %}Vui lòng chọn giới tính để tiếp tục{% elif weather is none %}Nhập nhiệt độ thật hoặc nhiệt độ thủ công để tiếp tục{% else %}Đã chọn: {{ activity }}{% endif %}</span><button id="btnContinue" class="btn-submit-ai continue-button" type="submit" {% if not activity or not shell_profile.gender or weather is none %}disabled{% endif %}>Tiếp tục <span aria-hidden="true">›</span></button></div>
+        </form>
+    </section>
+</div>
+{% endblock %}

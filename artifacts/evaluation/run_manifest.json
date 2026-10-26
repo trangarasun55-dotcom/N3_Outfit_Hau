@@ -1,0 +1,24 @@
+{
+  "run_at_utc": "2026-10-11T19:59:06+00:00",
+  "code_revision": null,
+  "revision_status": "No Git repository/commit was available in the supplied ZIP.",
+  "python_version": "3.14.7",
+  "scikit_learn_version": "1.9.1",
+  "seed": 42,
+  "status": "PASS",
+  "duration_seconds": 112.578,
+  "files_sha256": {
+    "model\\outfit_model.joblib": "c46692e52e6a2e0ce784d7ae680a5d1f57fc2d9fdcd43eb35cef0b446e0b78c1",
+    "model\\model_metadata.json": "e0b42fc2c2f7e803f2587418a9cd3c8619c6ef4d65762e531c1f1ba4d297e46b",
+    "data\\DatasetDSS.xlsx": "9f44cdc36053f2c4fecf57b9537e0e7b16bc0ed2690044d7a6c526b2b0101bed"
+  },
+  "outputs": [
+    "model_comparison.csv",
+    "model_metrics.json",
+    "ranking_metrics.json",
+    "recommendation_quality.json",
+    "runtime_metrics.json",
+    "evaluation_config.json",
+    "data_profile.json"
+  ]
+}

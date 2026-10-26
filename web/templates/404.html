@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Không tìm thấy trang{% endblock %}
+{% block content %}
+<div class="page-container card not-found-card">
+    <div class="activity-icon">🔎</div>
+    <h1 class="main-title">Không tìm thấy trang này</h1>
+    <p class="sub-title">Đường dẫn có thể đã thay đổi hoặc không còn tồn tại.</p>
+    <a class="btn-view-detail" href="{{ url_for('index') }}">Quay về trang chủ</a>
+</div>
+{% endblock %}

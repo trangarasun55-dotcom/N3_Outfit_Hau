@@ -1,0 +1,103 @@
+Failed to find real location of C:\Users\Dell\AppData\Local\Python\pythoncore-3.14-64\python.exe
+============================= test session starts =============================
+platform win32 -- Python 3.14.7, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Dell\AppData\Local\Python\pythoncore-3.14-64\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Dell\Documents\Codex\2026-10-12\3-c-hai-i-m-c\work\N6DSS_final
+plugins: anyio-4.15.1
+collecting ... collected 40 items / 1 deselected / 39 selected
+
+tests/test_model.py::test_imported_model_matches_api_contract_and_metadata PASSED
+tests/test_model.py::test_workbook_partition_matches_metadata_and_has_no_id_overlap PASSED
+tests/test_model.py::test_unknown_categories_and_api_scoring_path_are_finite PASSED
+tests/test_model.py::test_metadata_metrics_and_artifacts_are_present PASSED
+tests/test_rules.py::test_rule_reconstruction_matches_all_6000_rows B\u01b0\u1edbc 1: max_abs_error=0.100000 (6000 rows)
+B\u01b0\u1edbc 2: max_abs_error=0.100000 (6000 rows)
+B\u01b0\u1edbc 3b: max_abs_error=0.000000 (6000 rows)
+\u0110i\u1ec3m m\u1ee5c ti\xeau: max_abs_error=0.100000 (6000 rows)
+PASSED
+tests/test_rules.py::test_published_example PASSED
+tests/test_storage.py::StorageTests::test_admin_outfits_do_not_merge_different_item_compositions PASSED
+tests/test_storage.py::StorageTests::test_feedback_requires_owned_request_and_valid_outfit PASSED
+tests/test_storage.py::StorageTests::test_history_is_persisted_and_isolated_by_user PASSED
+tests/test_storage.py::StorageTests::test_legacy_requests_are_preserved_and_remain_writable_after_migration PASSED
+tests/test_storage.py::StorageTests::test_migration_repairs_databases_already_at_previous_integrity_version PASSED
+tests/test_llm_explain.py::LlmExplainTests::test_gemini_service_error_or_quota_uses_fallback_without_leaking_error PASSED
+tests/test_llm_explain.py::LlmExplainTests::test_invalid_output_is_retried_once_then_falls_back PASSED
+tests/test_llm_explain.py::LlmExplainTests::test_malformed_json_falls_back PASSED
+tests/test_llm_explain.py::LlmExplainTests::test_missing_api_key_returns_rules_fallback PASSED
+tests/test_llm_explain.py::LlmExplainTests::test_rounded_score_is_accepted_but_invented_number_is_rejected PASSED
+tests/test_llm_explain.py::LlmExplainTests::test_three_structured_explanations_are_validated_and_cached PASSED
+tests/test_llm_explain.py::LlmExplainTests::test_unavailable_model_switches_to_fallback_model PASSED
+tests/test_web_client.py::WebClientTests::test_admin_navigation_and_route_are_role_gated PASSED
+tests/test_web_client.py::WebClientTests::test_api_outage_is_friendly_and_manual_temperature_is_required PASSED
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/outfit')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/history')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/profile')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/ui/model-info')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/ui/weather')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/style')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/results')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow SUBPASSED(path='/detail/99')
+tests/test_web_client.py::WebClientTests::test_each_route_and_recommendation_flow PASSED
+tests/test_web_client.py::WebClientTests::test_history_and_feedback_use_session_user_identity PASSED
+tests/test_web_client.py::WebClientTests::test_history_filters_and_authentication_gate PASSED
+tests/test_web_client.py::WebClientTests::test_invalid_activity_and_profile_input PASSED
+tests/test_web_client.py::WebClientTests::test_model_evaluation_page_is_not_accessible_by_direct_url PASSED
+tests/test_web_client.py::WebClientTests::test_profile_template_uses_api_profile_data PASSED
+tests/test_web_client.py::WebClientTests::test_registration_requires_separate_login_and_logout_clears_session PASSED
+tests/test_web_client.py::WebClientTests::test_running_api_through_flask_client SKIPPED
+tests/test_web_client.py::WebClientTests::test_static_assets_are_cached_and_result_cache_is_bounded PASSED
+tests/test_web_client.py::WebClientTests::test_valid_schedule_image_type_and_invalid_upload PASSED
+tests/test_web_client.py::AuthGateTests::test_admin_login_goes_to_dashboard PASSED
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/outfit')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/history')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/profile')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/admin')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/style')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/results')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/detail/1')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere SUBPASSED(path='/loading')
+tests/test_web_client.py::AuthGateTests::test_anonymous_is_redirected_to_login_everywhere PASSED
+tests/test_web_client.py::AuthGateTests::test_expired_api_session_returns_to_login PASSED
+tests/test_web_client.py::AuthGateTests::test_login_and_register_pages_are_standalone SUBPASSED(path='/login')
+tests/test_web_client.py::AuthGateTests::test_login_and_register_pages_are_standalone SUBPASSED(path='/register')
+tests/test_web_client.py::AuthGateTests::test_login_and_register_pages_are_standalone PASSED
+tests/test_web_client.py::AuthGateTests::test_login_logout_cycle PASSED
+tests/test_web_client.py::AuthGateTests::test_login_next_cannot_redirect_off_site PASSED
+tests/test_web_client.py::AuthGateTests::test_wrong_password_and_offline_api_show_friendly_errors PASSED
+tests/test_recommender.py::RecommenderTests::test_content_profile_uses_explicit_style_color_and_formality PASSED
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Đi học', temperature=12, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Đi học', temperature=28, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Xưởng/Công trình', temperature=12, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Xưởng/Công trình', temperature=28, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Vẽ ngoại cảnh', temperature=12, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Vẽ ngoại cảnh', temperature=28, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Thuyết trình', temperature=12, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Thuyết trình', temperature=28, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Đi học', temperature=12, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Đi học', temperature=28, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Xưởng/Công trình', temperature=12, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Xưởng/Công trình', temperature=28, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Vẽ ngoại cảnh', temperature=12, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Vẽ ngoại cảnh', temperature=28, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Thuyết trình', temperature=12, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Thuyết trình', temperature=28, style='Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Đi học', temperature=20, style='Smart Casual')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Xưởng/Công trình', temperature=34, style='Streetwear')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nam', activity='Vẽ ngoại cảnh', temperature=34, style='Minimalist')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits SUBPASSED(gender='Nữ', activity='Thuyết trình', temperature=12, style='Artsy')
+tests/test_recommender.py::RecommenderTests::test_twenty_contexts_return_high_scoring_pairwise_distinct_outfits PASSED
+
+============================== warnings summary ===============================
+..\N6DSS_Outfit_HAU\.venv\Lib\site-packages\google\genai\types.py:42
+  C:\Users\Dell\Documents\Codex\2026-10-12\3-c-hai-i-m-c\work\N6DSS_Outfit_HAU\.venv\Lib\site-packages\google\genai\types.py:42: DeprecationWarning: '_UnionGenericAlias' is deprecated and slated for removal in Python 3.17
+    VersionedUnionType = Union[builtin_types.UnionType, _UnionGenericAlias]
+
+..\N6DSS_Outfit_HAU\.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Dell\Documents\Codex\2026-10-12\3-c-hai-i-m-c\work\N6DSS_Outfit_HAU\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+= 38 passed, 1 skipped, 1 deselected, 2 warnings, 40 subtests passed in 130.00s (0:02:10) =

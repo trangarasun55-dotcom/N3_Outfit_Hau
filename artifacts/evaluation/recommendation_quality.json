@@ -1,0 +1,27 @@
+{
+  "status": "MEASURED_SYNTHETIC_SCENARIOS",
+  "scenario_count": 20,
+  "scenario_source": "deterministic test contexts from recommender regression suite; not real user requests",
+  "real_user_relevance": {
+    "status": "NOT_EVALUABLE",
+    "reason": "The project snapshot has no observed outfit ratings/feedback suitable as user-item relevance ground truth."
+  },
+  "diversity": {
+    "definition": "mean pairwise 1 - Jaccard(item IDs) across returned outfits within each request",
+    "measured_pairs": 52,
+    "mean": 1.0
+  },
+  "catalog_coverage": {
+    "unique_items_recommended": 95,
+    "catalog_items": 1500,
+    "fraction": 0.06333333333333334,
+    "scope": "synthetic scenarios only; not production traffic coverage"
+  },
+  "outfits_per_scenario": {
+    "requested": 3,
+    "minimum": 0,
+    "mean": 2.7,
+    "maximum": 3,
+    "scenarios_with_fewer_than_requested": 3
+  }
+}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Tủ Đồ DSS · Hồ sơ{% endblock %}
+{% block content %}
+<section class="page-container secondary-page">
+    <p class="section-kicker">{{ 'TÀI KHOẢN QUẢN TRỊ' if is_admin else 'TÀI KHOẢN CỦA BẠN' }}</p>
+    <h1>{{ 'Hồ sơ quản trị viên' if is_admin else 'Hồ sơ cá nhân' }}</h1>
+    {% if error %}<div class="notice error-notice" role="alert">{{ error }}</div>{% endif %}
+    <div class="profile-layout">
+        <section class="card profile-card">
+            <h2>Thông tin hồ sơ</h2>
+            <p class="section-helper">Thông tin này giúp cá nhân hóa các gợi ý trang phục.</p>
+            <form class="profile-form" method="post" action="{{ url_for('profile') }}">
+                <label for="profileDisplayName">Tên hiển thị
+                    <input id="profileDisplayName" name="display_name" type="text" maxlength="60" required value="{{ user_profile.display_name or '' }}">
+                </label>
+                <label for="profileEmail">Email
+                    <input id="profileEmail" type="email" value="{{ user_profile.email or '' }}" readonly>
+                </label>
+                <label for="profileGender">Giới tính
+                    <select id="profileGender" name="gender">
+                        <option value="" {% if not user_profile.gender %}selected{% endif %}>Chưa chọn</option>
+                        <option value="Nam" {% if user_profile.gender == 'Nam' %}selected{% endif %}>Nam</option>
+                        <option value="Nữ" {% if user_profile.gender == 'Nữ' %}selected{% endif %}>Nữ</option>
+                    </select>
+                </label>
+                <label for="preferredStyle">Phong cách yêu thích
+                    <input id="preferredStyle" name="preferred_style" type="text" maxlength="40" value="{{ user_profile.preferred_style or '' }}" placeholder="Ví dụ: Smart Casual">
+                </label>
+                <label for="defaultContext">Hoàn cảnh mặc định
+                    <input id="defaultContext" name="default_context" type="text" maxlength="60" value="{{ user_profile.default_context or '' }}" placeholder="Ví dụ: Đi học">
+                </label>
+                <button class="btn-submit-ai" type="submit">Lưu hồ sơ</button>
+            </form>
+        </section>
+        <aside class="profile-side">
+            <section class="card profile-stats">
+                <h2>{{ 'Hoạt động tài khoản' if is_admin else 'Hoạt động của bạn' }}</h2>
+                <div class="personal-stat"><strong>{{ finalized_count }}</strong><span>Lần chốt trang phục</span></div>
+                <div class="personal-stat"><strong>{{ feedback_count }}</strong><span>Lượt đánh giá đã gửi</span></div>
+                <a class="btn-outline-pill" href="{{ url_for('history') }}">{{ 'Xem lịch sử hệ thống' if is_admin else 'Xem lịch sử cá nhân' }}</a>
+            </section>
+            <section class="card profile-card">
+                <h2>Đổi mật khẩu</h2>
+                <p class="section-helper">Mật khẩu mới cần có ít nhất 12 ký tự.</p>
+                <form class="profile-form" method="post" action="{{ url_for('change_profile_password') }}">
+                    <label for="currentPassword">Mật khẩu hiện tại
+                        <input id="currentPassword" name="current_password" type="password" autocomplete="current-password" maxlength="128" required>
+                    </label>
+                    <label for="newPassword">Mật khẩu mới
+                        <input id="newPassword" name="new_password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+                    </label>
+                    <button class="btn-outline-pill" type="submit">Cập nhật mật khẩu</button>
+                </form>
+            </section>
+        </aside>
+    </div>
+</section>
+{% endblock %}

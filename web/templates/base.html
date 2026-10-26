@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}OutfitAI · Hệ trợ giúp quyết định trang phục{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20261027-6">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <a class="brand" href="{{ url_for('index') }}" aria-label="OutfitAI, Trang chủ">
+                <span class="logo-box" aria-hidden="true">✦</span>
+                <span class="brand-info">
+                    <strong>OutfitAI</strong>
+                    <small>Kiến trúc · Phong cách</small>
+                </span>
+            </a>
+
+            <section class="context-card" aria-label="Ngữ cảnh hôm nay">
+                <span class="context-title">NGỮ CẢNH HÔM NAY</span>
+                <div class="context-detail">
+                    <span aria-hidden="true">☀</span>
+                    <span id="sidebarWeather">{% if session.get('weather') is not none %}{{ session.get('weather') }}°C · {{ session.get('weather_city', 'Hà Nội') }}{% else %}Chưa có dữ liệu thời tiết{% endif %}</span>
+                </div>
+                <div class="context-detail">
+                    <span aria-hidden="true">▤</span>
+                    <span id="sidebarActivity">{{ session.get('activity', 'Chưa chọn hoạt động') }} · <span id="sidebarWeekday">Đang xác định thứ</span></span>
+                </div>
+            </section>
+
+            <nav class="nav-menu" aria-label="Điều hướng chính">
+                <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                    <span class="nav-icon">⌂</span> Trang chủ
+                </a>
+                <a href="{{ url_for('outfit_start') }}" class="nav-link {% if request.endpoint in ['outfit_start', 'style_select', 'loading', 'results', 'detail'] %}active{% endif %}">
+                    <span class="nav-icon">✧</span> Gợi ý trang phục
+                </a>
+                <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}">
+                    <span class="nav-icon">◷</span> Lịch sử
+                </a>
+                <a href="{{ url_for('profile') }}" class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">
+                    <span class="nav-icon">○</span> Hồ sơ
+                </a>
+                {% if is_admin %}
+                <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <span class="nav-icon">▦</span> Quản trị
+                </a>
+                {% endif %}
+            </nav>
+
+            <div class="user-profile">
+                {% set display_name = shell_profile['name']|default('Người dùng') %}
+                {% set initials = display_name.split()|map('first')|join|upper %}
+                <div class="avatar" aria-hidden="true">{{ initials[:2] }}</div>
+                <div class="user-meta">
+                    <div class="user-name">{{ display_name }}</div>
+                    <div class="user-role">{{ 'Quản trị viên' if is_admin else 'Người dùng' }}</div>
+                </div>
+            </div>
+
+            <form class="logout-form" action="{{ url_for('logout') }}" method="post">
+                <button class="logout-btn" type="submit">
+                    <span aria-hidden="true">⎋</span> Đăng xuất
+                </button>
+            </form>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="top-breadcrumb">
+                    <span aria-hidden="true">›</span>
+                    {% if request.endpoint == 'profile' %}Hồ sơ
+                    {% elif request.endpoint == 'history' %}Lịch sử
+                    {% elif request.endpoint == 'admin_dashboard' %}Quản trị
+                    {% elif request.endpoint in ['style_select', 'loading', 'results', 'detail', 'history_detail'] %}Gợi ý trang phục
+                    {% else %}Trang chủ{% endif %}
+                </div>
+                <div class="top-date">
+                    <span aria-hidden="true">▦</span>
+                    <time id="todayDate">Đang tải ngày…</time>
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="notice-list" aria-live="polite">
+                    {% for category, message in messages %}
+                    <div class="notice {{ 'success-notice' if category == 'success' else 'error-notice' }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}?v=20261027-4"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

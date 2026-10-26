@@ -1,0 +1,36 @@
+{
+  "status": "PARTIAL_PASS_WITH_BLOCKED_SUITES",
+  "targeted_suite": {
+    "command_scope": "model, rules, storage, llm explanation, Flask web client, recommender; excluding predict_http",
+    "passed": 38,
+    "skipped": 1,
+    "deselected": 1,
+    "warnings": 2,
+    "exit_code": 0,
+    "log": "test_results/logs/pytest-core.log"
+  },
+  "follow_up_regression": {
+    "scope": "model metadata and public model-info endpoint",
+    "passed": 5,
+    "warnings": 1,
+    "exit_code": 0,
+    "note": "Includes four model tests already counted in targeted_suite and one additional public metadata exposure check."
+  },
+  "blocked": [
+    {
+      "suite": "FastAPI TestClient auth/API endpoints",
+      "reason": "Windows sandbox blocked local socketpair/Proactor event loop setup; these checks are not counted as passed."
+    },
+    {
+      "suite": "browser visual responsive verification",
+      "reason": "No browser automation runtime was available in this environment."
+    }
+  ],
+  "evaluation": {
+    "status": "PASS",
+    "held_out_test_rows": 900,
+    "log": "test_results/logs/evaluation.log",
+    "outputs": "artifacts/evaluation/"
+  },
+  "coverage": "NOT_RUN; no coverage report was generated."
+}

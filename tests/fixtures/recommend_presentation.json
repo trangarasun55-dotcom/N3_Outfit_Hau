@@ -1,0 +1,10 @@
+{
+  "gender": "Nữ",
+  "activity": "Thuyết trình",
+  "temperature": 28,
+  "styles": [],
+  "colors": [],
+  "formality": 75,
+  "top_n": 3,
+  "temperature_source": "manual"
+}

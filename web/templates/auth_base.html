@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tủ Đồ DSS{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-body">
+    <main class="auth-shell">
+        <section class="auth-intro" aria-label="Giới thiệu Tủ Đồ DSS">
+            <span class="logo-box" aria-hidden="true">✦</span>
+            <p class="section-kicker">TỦ ĐỒ DSS</p>
+            <h2 class="auth-intro-title">Hệ trợ giúp quyết định trang phục</h2>
+            <p class="auth-intro-text">Gợi ý trang phục theo hoạt động, thời tiết và phong cách của bạn, kèm điểm phù hợp, độ tin cậy và lời giải thích rõ ràng.</p>
+            <ul class="auth-intro-list">
+                <li>Điểm phù hợp tính bằng mô hình học máy</li>
+                <li>Ba bộ gợi ý khác nhau cho mỗi lần chọn</li>
+                <li>Lưu lịch sử và đánh giá của riêng bạn</li>
+            </ul>
+        </section>
+        <section class="auth-panel">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}<div class="notice-list" aria-live="polite">{% for category, message in messages %}<div class="notice {{ 'success-notice' if category == 'success' else 'error-notice' }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+</body>
+</html>

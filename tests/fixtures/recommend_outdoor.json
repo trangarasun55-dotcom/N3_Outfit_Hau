@@ -1,0 +1,12 @@
+{
+  "gender": "Nam",
+  "activity": "Vẽ ngoại cảnh",
+  "temperature": 33,
+  "styles": ["Casual"],
+  "colors": ["Navy"],
+  "formality": 35,
+  "top_n": 3,
+  "temperature_source": "live",
+  "rain_probability": 45,
+  "schedule_summary": "Hôm nay bạn có 2 tiết, buổi sáng ở studio."
+}

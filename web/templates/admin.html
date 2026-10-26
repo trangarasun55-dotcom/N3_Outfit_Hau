@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% block title %}Tủ Đồ DSS · Quản trị{% endblock %}
+{% block content %}
+<section class="page-container secondary-page admin-page">
+    <div class="admin-heading">
+        <div>
+            <p class="section-kicker">KHÔNG GIAN QUẢN TRỊ</p>
+            <h1>Tổng quan hệ thống</h1>
+        </div>
+        <a class="btn-outline-pill" href="{{ url_for('admin_export') }}">Xuất CSV</a>
+    </div>
+
+    {% if admin_error %}
+        <div class="notice error-notice" role="alert">{{ admin_error }}</div>
+    {% endif %}
+
+    {% if not admin_error %}
+    <form class="admin-period-filter card" method="get" action="{{ url_for('admin_dashboard') }}">
+        <label for="adminPeriod">Khoảng thống kê</label>
+        <select id="adminPeriod" name="period">
+            <option value="day" {% if period == 'day' %}selected{% endif %}>Hôm nay</option>
+            <option value="week" {% if period == 'week' %}selected{% endif %}>Tuần này</option>
+            <option value="month" {% if period == 'month' %}selected{% endif %}>Tháng này</option>
+        </select>
+        <button class="btn-outline-pill" type="submit">Cập nhật</button>
+        <span class="section-helper">Dữ liệu sự kiện trên biểu đồ hiển thị tối đa 100 mục mỗi loại.</span>
+    </form>
+
+    <div class="admin-stat-grid">
+        <article class="card admin-stat">
+            <span>Tài khoản người dùng</span>
+            <strong>{{ stats.get('total_users', 0) }}</strong>
+        </article>
+        <article class="card admin-stat">
+            <span>Lượt gợi ý</span>
+            <strong>{{ stats.get('total_recommendations', 0) }}</strong>
+        </article>
+        <article class="card admin-stat">
+            <span>Lượt xem bộ trang phục</span>
+            <strong>{{ stats.get('total_views', 0) }}</strong>
+        </article>
+        <article class="card admin-stat">
+            <span>Lượt chốt</span>
+            <strong>{{ stats.get('finalized_count', 0) }}</strong>
+        </article>
+        <article class="card admin-stat">
+            <span>Hữu ích / Không hữu ích</span>
+            <strong>{{ stats.get('likes', 0) }} / {{ stats.get('dislikes', 0) }}</strong>
+        </article>
+        <article class="card admin-stat">
+            <span>Thời gian xem trung bình</span>
+            <strong>{{ stats.get('average_view_seconds', 0) }} giây</strong>
+        </article>
+    </div>
+
+    <section class="card admin-chart-card">
+        <div class="admin-section-heading">
+            <div>
+                <h2>Hoạt động theo thời gian</h2>
+                <p class="section-helper">
+                    Lượt xem, chốt trang phục và đánh giá hữu ích theo
+                    {{ {'day':'giờ hôm nay','week':'ngày trong tuần','month':'ngày trong tháng'}.get(period, 'ngày trong tuần') }}.
+                </p>
+            </div>
+        </div>
+        <div class="admin-chart-legend">
+            <span><i class="legend-view"></i>Lượt xem</span>
+            <span><i class="legend-final"></i>Đã chốt</span>
+            <span><i class="legend-like"></i>Tỉ lệ hữu ích</span>
+        </div>
+        <div class="admin-chart" id="adminActivityChart" role="img" aria-label="Biểu đồ hoạt động theo thời gian"></div>
+        <script type="application/json" id="adminChartData">{{ {'viewed': viewed, 'finalized': finalized, 'feedback': feedback_items}|tojson }}</script>
+    </section>
+
+    <section class="card admin-table-card">
+        <div class="admin-section-heading">
+            <div>
+                <h2>Top bộ trang phục</h2>
+                <p class="section-helper">Sắp xếp theo lượt xem, chốt và đánh giá.</p>
+            </div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bộ trang phục</th>
+                        <th>Được gợi ý</th>
+                        <th>Lượt xem</th>
+                        <th>Đã chốt</th>
+                        <th>Hữu ích</th>
+                        <th>Không hữu ích</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for outfit in outfits %}
+                    <tr>
+                        <td>
+                            {{ outfit.get('name', '') if outfit is mapping else '' }}
+                            {% set outfit_items = outfit.get('items', []) if outfit is mapping else [] %}
+                            {% if outfit_items is sequence and outfit_items is not string and outfit_items %}
+                                <br><small>{{ outfit_items | join(' · ') }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ outfit.get('recommendation_count', 0) if outfit is mapping else 0 }}</td>
+                        <td>{{ (outfit.get('view_count', 0) or 0) if outfit is mapping else 0 }}</td>
+                        <td>{{ (outfit.get('finalize_count', 0) or 0) if outfit is mapping else 0 }}</td>
+                        <td>{{ (outfit.get('likes', 0) or 0) if outfit is mapping else 0 }}</td>
+                        <td>{{ (outfit.get('dislikes', 0) or 0) if outfit is mapping else 0 }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6">Chưa có dữ liệu bộ trang phục.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card admin-table-card">
+        <div class="admin-section-heading">
+            <div>
+                <h2>Tài khoản</h2>
+                <p class="section-helper">Danh sách tối đa 100 tài khoản gần nhất.</p>
+            </div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr><th>Tên</th><th>Email</th><th>Vai trò</th><th>Lượt gợi ý</th><th>Hoạt động gần nhất</th></tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.get('display_name', '') if user is mapping else '' }}</td>
+                        <td>{{ user.get('email', '') if user is mapping else '' }}</td>
+                        <td>{{ user.get('role', '') if user is mapping else '' }}</td>
+                        <td>{{ user.get('recommendation_count', 0) if user is mapping else 0 }}</td>
+                        <td>
+                            {% set activity_at = user.get('last_activity_at', '') if user is mapping else '' %}
+                            <time class="local-datetime" datetime="{{ activity_at or '' }}">{{ activity_at or '—' }}</time>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5">Chưa có tài khoản.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card admin-table-card">
+        <div class="admin-section-heading">
+            <div>
+                <h2>Nhật ký lượt xem gần đây</h2>
+                <p class="section-helper">Danh sách sự kiện mới nhất do API trả về.</p>
+            </div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr><th>Thời điểm</th><th>Tên bộ</th><th>Hoàn cảnh</th><th>Điểm</th></tr>
+                </thead>
+                <tbody>
+                {% for event in recent_activity %}
+                    <tr>
+                        {% set created_at = event.get('created_at', '') if event is mapping else '' %}
+                        <td><time class="local-datetime" datetime="{{ created_at or '' }}">{{ created_at or '—' }}</time></td>
+                        <td>{{ event.get('name', '') if event is mapping else '' }}</td>
+                        <td>{{ (event.get('activity', '') or '—') if event is mapping else '—' }}</td>
+                        <td>
+                            {% if event is mapping and event.get('score') is not none %}
+                                {{ event.get('score')|round(1) }}/10
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4">Chưa có hoạt động.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+</section>
+{% endblock %}

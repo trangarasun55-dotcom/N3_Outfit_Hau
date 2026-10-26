@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}OutfitAI · Lịch sử phối đồ{% endblock %}
+{% block content %}
+{% set history_counts = history_counts|default({}) %}
+{% set history_type = history_type|default('viewed') %}
+{% set range_name = range_name|default('all') %}
+{% set from_date = from_date|default('') %}
+{% set to_date = to_date|default('') %}
+{% set history_items = history_items|default([]) %}
+{% set today_count = today_count|default(none) %}
+<section class="page-container secondary-page history-page">
+    <p class="section-kicker">CÁ NHÂN HÓA</p>
+    <h1>Lịch sử phối đồ</h1>
+    <p class="history-intro">Xem lại các combo đã được gợi ý, đánh giá hoặc chốt từ dữ liệu lịch sử của bạn.</p>
+    {% if api_error %}<div class="notice error-notice" role="alert">{{ api_error }}</div>{% endif %}
+
+    <nav class="history-tabs" aria-label="Loại lịch sử">
+        {% for tab, label in [('viewed', 'Đã xem gợi ý'), ('finalized', 'Đã chốt trang phục'), ('feedback', 'Đã đánh giá')] %}
+        <a class="history-tab {% if history_type == tab %}active{% endif %}"
+           href="{{ url_for('history', type=tab, range=range_name, **({'from': from_date, 'to': to_date} if range_name == 'from-to' else {})) }}"
+           {% if history_type == tab %}aria-current="page"{% endif %}>
+            {{ label }} <span class="history-count">{{ history_counts.get(tab, '—') }}</span>
+        </a>
+        {% endfor %}
+    </nav>
+
+    <form class="history-filter card" method="get" action="{{ url_for('history') }}">
+        <input type="hidden" name="type" value="{{ history_type }}">
+        <label for="historyRange">Thời gian</label>
+        <select id="historyRange" name="range">
+            {% for value, label in [('day', 'Hôm nay'), ('week', 'Tuần này'), ('month', 'Tháng này'), ('all', 'Tất cả'), ('from-to', 'Khoảng ngày')] %}
+            <option value="{{ value }}" {% if range_name == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <label for="historyFrom">Từ ngày</label>
+        <input id="historyFrom" type="date" name="from" value="{{ from_date }}" {% if range_name != 'from-to' %}disabled{% endif %}>
+        <label for="historyTo">Đến ngày</label>
+        <input id="historyTo" type="date" name="to" value="{{ to_date }}" {% if range_name != 'from-to' %}disabled{% endif %}>
+        <button class="btn-outline-pill" type="submit">Lọc</button>
+    </form>
+
+    {% set score_stats = namespace(values=[]) %}
+    {% for entry in history_items %}
+        {% if entry.score is not none %}{% set score_stats.values = score_stats.values + [entry.score|float] %}{% endif %}
+    {% endfor %}
+    <section class="history-summary-grid" aria-label="Thống kê lịch sử">
+        <article class="history-stat card"><span>Tổng mục trong bộ lọc</span><strong>{{ total }}</strong><small>{{ {'viewed': 'Đã xem gợi ý', 'finalized': 'Đã chốt trang phục', 'feedback': 'Đã đánh giá'}.get(history_type, 'Lịch sử') }}</small></article>
+        <article class="history-stat card"><span>Hôm nay</span><strong>{{ today_count if today_count is not none else '—' }}</strong><small>{{ {'viewed': 'Lượt xem', 'finalized': 'Lượt chốt', 'feedback': 'Lượt đánh giá'}.get(history_type, 'Hoạt động') }}</small></article>
+        <article class="history-stat card"><span>Điểm trung bình trang này</span><strong>{% if score_stats.values %}{{ (score_stats.values|sum / score_stats.values|length)|round(1) }}/10{% else %}—{% endif %}</strong><small>{{ history_items|length }} mục đang hiển thị · giờ Việt Nam</small></article>
+    </section>
+    <p class="section-helper history-total">{{ total }} mục theo bộ lọc hiện tại · Múi giờ hiển thị: Việt Nam</p>
+    {% if history_items %}
+        <div class="history-list">
+        {% for entry in history_items %}
+            {% set detail_url = url_for('history_detail', request_item_id=entry.request_item_id, type=history_type, range=range_name, page=page, **({'from': from_date, 'to': to_date} if range_name == 'from-to' else {})) %}
+            <article class="history-entry card" data-history-entry data-created-at="{{ entry.created_at or '' }}">
+                <div class="history-item-previews" aria-label="Ảnh các món trong combo">
+                    {% for item in entry['items'][:4] %}
+                    {% set product_id = item.get('id', item.get('product_id', item.get('ma_sp', ''))) %}
+                    {% set product_filename = product_id|string if product_id else '' %}
+                    {% if product_filename and '.' not in product_filename %}{% set product_filename = product_filename ~ '.jpg' %}{% endif %}
+                    <div class="history-item-preview">
+                        {% if product_filename %}
+                        <img src="{{ url_for('static', filename='images/images/' ~ product_filename) }}?v=20261012" alt="{{ item.get('name', 'Món đồ') }}" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                        <span class="history-image-fallback" hidden>Ảnh chưa có</span>
+                        {% else %}<span class="history-image-fallback">Ảnh chưa có</span>{% endif %}
+                        <small>{{ item.get('category', item.get('type', 'Món đồ')) }}</small>
+                    </div>
+                    {% else %}
+                    <div class="history-item-preview history-preview-empty"><span class="history-image-fallback">Chưa có ảnh món đồ</span></div>
+                    {% endfor %}
+                </div>
+                <div class="history-entry-main">
+                    <div class="history-entry-heading">
+                        <h3><a href="{{ detail_url }}">{{ entry.name }}</a></h3>
+                        <time class="local-datetime" datetime="{{ entry.created_at or '' }}">{{ entry.created_at or '—' }}</time>
+                    </div>
+                    <p class="card-subtext history-weather-line">{% if entry.temperature is not none %}{{ entry.temperature|round(1) }}°C{% else %}Chưa có dữ liệu nhiệt độ{% endif %} · {{ entry.activity or 'Chưa chọn hoạt động' }}</p>
+                    <p class="card-subtext history-item-names">{% for item in entry['items'] %}{{ item.name }}{% if not loop.last %} · {% endif %}{% else %}Chưa có chi tiết món đồ{% endfor %}</p>
+                    <div class="history-entry-meta">
+                        <span class="score-percent">{% if entry.score is not none %}{{ (entry.score * 10)|round|int }}% phù hợp{% else %}Chưa có điểm{% endif %}</span>
+                        <span>Điểm {{ entry.score|round(1) }}/10</span>
+                        <span>Khoảng {{ entry.score_low|round(2) }}–{{ entry.score_high|round(2) }}/10</span>
+                        <span class="confidence-badge">Độ tin cậy {{ entry.confidence_level or '—' }}</span>
+                        {% if entry.finalized_at %}<span class="status-pill">Đã chốt</span>{% endif %}
+                        {% if entry.feedback %}<span class="status-pill {% if entry.feedback.value < 0 %}status-negative{% endif %}">{% if entry.feedback.value > 0 %}Hữu ích{% else %}Không hữu ích{% endif %}</span>{% endif %}
+                    </div>
+                </div>
+                <div class="history-entry-actions">
+                    <a class="btn-outline-pill" href="{{ detail_url }}">Mở chi tiết</a>
+                    {% if entry.finalized_at %}
+                    <form method="post" action="{{ url_for('history_finalize', request_item_id=entry.request_item_id) }}">
+                        <input type="hidden" name="next" value="{{ request.full_path }}">
+                        <button class="btn-outline-pill" type="submit" name="cancel" value="1">Hủy chốt</button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{{ url_for('history_finalize', request_item_id=entry.request_item_id) }}">
+                        <input type="hidden" name="next" value="{{ request.full_path }}">
+                        <button class="btn-outline-pill" type="submit">Chốt trang phục</button>
+                    </form>
+                    {% endif %}
+                    <form method="post" action="{{ url_for('history_rating', request_item_id=entry.request_item_id) }}" class="history-rating-form">
+                        <input type="hidden" name="next" value="{{ request.full_path }}">
+                        <button class="btn-outline-pill" type="submit" name="value" value="1">Hữu ích</button>
+                        <button class="btn-outline-pill" type="submit" name="value" value="-1">Không hữu ích</button>
+                    </form>
+                </div>
+            </article>
+        {% endfor %}
+        </div>
+        {% if total > page_size %}
+        <nav class="pagination" aria-label="Phân trang lịch sử">
+            {% if page > 1 %}<a class="btn-outline-pill" href="{{ url_for('history', type=history_type, range=range_name, page=page-1, **({'from': from_date, 'to': to_date} if range_name == 'from-to' else {})) }}">‹ Trang trước</a>{% endif %}
+            <span>Trang {{ page }} / {{ (total / page_size)|round(0, 'ceil')|int }}</span>
+            {% if page * page_size < total %}<a class="btn-outline-pill" href="{{ url_for('history', type=history_type, range=range_name, page=page+1, **({'from': from_date, 'to': to_date} if range_name == 'from-to' else {})) }}">Trang sau ›</a>{% endif %}
+        </nav>
+        {% endif %}
+    {% else %}
+        <section class="home-card empty-state">
+            <span class="empty-calendar" aria-hidden="true">◷</span>
+            <h2>{% if history_type == 'finalized' %}Chưa chốt trang phục nào{% elif history_type == 'feedback' %}Chưa có đánh giá nào{% else %}Chưa có gợi ý nào được xem{% endif %}</h2>
+            <p>Các hoạt động của bạn trong khoảng thời gian này sẽ xuất hiện tại đây.</p>
+            <a class="btn-submit-ai" href="{{ url_for('index') }}">Tạo gợi ý</a>
+        </section>
+    {% endif %}
+</section>
+{% endblock %}

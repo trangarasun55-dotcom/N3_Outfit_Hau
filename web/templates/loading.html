@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Tủ Đồ DSS · Tạo gợi ý{% endblock %}
+{% block content %}
+<div class="loading-center-wrapper">
+    <div class="ai-sparkle-circle" aria-hidden="true">✦</div>
+    {% if error %}<h1>Chưa lấy được gợi ý</h1><p class="notice error-notice" role="alert">{{ error }}</p>{% else %}<h1>Sẵn sàng tìm trang phục phù hợp</h1><p class="loading-subtext">{{ session.get('activity') }} · {{ session.get('temperature') }}°C · {{ session.get('profile', {}).get('gender') }}</p>{% endif %}
+    <div class="loading-spinner" id="recommendationSpinner" role="status" aria-label="Đang tạo gợi ý" hidden></div>
+    <form method="post" action="{{ url_for('loading') }}" id="recommendationForm"><button class="btn-submit-ai" id="recommendationSubmit" type="submit">{% if error %}Thử lại{% else %}Tạo gợi ý{% endif %}</button></form>
+    <div class="loading-actions"><a href="{{ url_for('style_select') }}" class="btn-outline-pill">Chỉnh tiêu chí</a><a href="{{ url_for('index') }}" class="btn-outline-pill">Trang chủ</a></div>
+</div>
+{% endblock %}
